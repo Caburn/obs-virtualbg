@@ -1,0 +1,25 @@
+name: build
+on: push
+jobs:
+  build_win:
+    name: build on Windows
+    runs-on: windows-2019
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Cache OBS-Studio deps
+        uses: actions/cache@v2
+        env:
+          cache-name: obs
+        with:
+          path: deps/obs-studio
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('scripts/build_obs.bat') }}
+      - name: build
+        run: .\scripts\build_win.bat
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: windows-archive
+          path: build*/obs-virtualbg-*.zip
